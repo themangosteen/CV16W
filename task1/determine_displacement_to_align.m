@@ -13,8 +13,6 @@ function [displacementBtoA] = determine_displacement_to_align(imgA, imgB)
 % OUTPUT
 % displacementBtoA ... vector storing best displacement in pixels [down right]
 
-%TODO
-
 % arithmetic mean of all pixel values
 meanA = sum(sum(imgA)) / numel(imgA); % sum of column sums divided by pixel count
 meanB = sum(sum(imgB)) / numel(imgB);
