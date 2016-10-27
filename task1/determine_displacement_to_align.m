@@ -21,6 +21,7 @@ meanB = sum(sum(imgB)) / numel(imgB);
 % choose the displacement yielding the highest correlation
 % TODO maybe more efficient to loop separately for rows and cols instead of
 % for all values (30*2 calculations instead of 30^2)
+% the assignment say exhaustively search over the window, optimization unnecessary
 best_displacement = [0 0];
 best_correlation = 0;
 for shiftdown = -15:15
@@ -29,6 +30,8 @@ for shiftdown = -15:15
         imgB_shifted = circshift(imgB, displacement);
         standarddeviation = sqrt(sum(sum((imgA-meanA).^2)).*sum(sum((imgB_shifted-meanB).^2))); 
         ncc = sum(sum((imgA-meanA).*(imgB_shifted-meanB))) / standarddeviation;
+        %Alternative:
+        %ncc=corr2(imgA,circshift(imgB,[shiftdown shiftright]));
         
         if ncc > best_correlation
            best_correlation = ncc;

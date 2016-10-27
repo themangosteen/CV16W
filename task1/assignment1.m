@@ -8,9 +8,9 @@ function[] = assignment1(imgfileR, imgfileG, imgfileB)
     clear global;
     
     % load images
-    imgR = im2double(imread('Images and Functions/00351v_R.jpg'));
-    imgG = im2double(imread('Images and Functions/00351v_G.jpg'));
-    imgB = im2double(imread('Images and Functions/00351v_B.jpg'));
+    imgR = im2double(imread(imgfileR));
+    imgG = im2double(imread(imgfileG));
+    imgB = im2double(imread(imgfileB));
 
     % determine how much to shift G and B images relative to R
     displacementGtoR = determine_displacement_to_align(imgR, imgG);
