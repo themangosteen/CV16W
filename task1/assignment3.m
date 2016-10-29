@@ -1,4 +1,4 @@
-function [ x, y, level ] = assignment3( path_to_input_image )
+function [] = assignment3( path_to_input_image )
 %ASSIGNMENT3  Scale-Invariant Blob Detection
 %   with scale-normalized Laplacian of Gaussians operator
 
@@ -6,10 +6,16 @@ function [ x, y, level ] = assignment3( path_to_input_image )
 sigma0 = 2;
 k = 1.25;
 levels = 10;
-threshold = 0.1;
+threshold = 0.4; % ideal for butterfly image
+%threshold = 0.25; % ideal for bomb image
+%threshold = 0.3; % ideal for rain image (but still bad results)
+%threshold = 0.07; % ideal for alphabet image (but terrible)
 
 %% Preparation
 image = im2double(imread(path_to_input_image)); % load image
+if size(image, 3)==3 % color image
+  image = rgb2gray(image);  
+end
 scale_space = zeros(size(image,1),size(image,2),levels); % results after filtering
 sigma = sigma0; % sigma: scale (of gauss etc)
 
@@ -17,6 +23,9 @@ sigma = sigma0; % sigma: scale (of gauss etc)
 for i = 1:levels % calculate all sigmas (increase always by multiplying with constant k)
     filterSize = 2*floor(3*sigma)+1; % formular according to Details and Hints - Filter Creation
     logFilter = fspecial('log', filterSize, sigma); % create LoG filter
+    % Response to filter decreases with increasing size. We have to
+    % normalize it, by multiplying with sigma^2
+    logFilter = logFilter*sigma*sigma; 
     % Use 'same' and 'replicate' to avoid artefacts at the borders and different
     % output dimensions.
     scale_space(:,:,i) = imfilter(image, logFilter, 'same', 'replicate');
@@ -25,7 +34,7 @@ end
 
 %% Non-maximum suppression
 scale_space = abs(scale_space); % only search for absolute maximums
-scale_space(scale_space<threshold) = 0;
+scale_space(scale_space<threshold) = 0; % only consider filter responses >= threshold
 maxima = zeros(size(scale_space,1), size(scale_space,2),levels);
 for i = 1:levels % check for maxima on all levels
     % compare with same level
@@ -52,7 +61,7 @@ end
 %  0,0,0,0;...]
 % find => [7,...]
 % ind2sub => [3,2,1;...]
-[x, y, level] = ind2sub(size(maxima),find(maxima)); 
+[y, x, level] = ind2sub(size(maxima),find(maxima)); 
 showResults(image, x, y, level);
 end
 
@@ -97,5 +106,5 @@ end
 end
 
 function [  ] = showResults( image, x, y, level )
-    show_all_circles(image, x, y, level*sqrt(2));
+    show_all_circles(image, x, y, level*sqrt(2), 'r', 2.0);
 end

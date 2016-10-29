@@ -1,0 +1,3 @@
+bombCraters.jpg: http://www.dvhardware.net/news/ww2_bomb_craters.jpg
+rain.jpg: http://6iee.com/361824.html
+alphabet.png: https://upload.wikimedia.org/wikipedia/en/6/6f/Aslfingerspellalpha.png
