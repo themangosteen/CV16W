@@ -5,7 +5,7 @@ function [] = assignment2( filename, K, D )
 % the pixels of each cluster colored in its centroid RGB-value
 if D==3 || D==5
     %load image and initialize variables
-    disp('Reading images and initilizing values...');
+    disp('Reading images and initializing values...');
     image = im2double(imread(filename));
     
     %1. Matrix consisting of k D-dimensional vectors �(=centroids) as
