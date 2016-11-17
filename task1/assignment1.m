@@ -1,5 +1,6 @@
 function[] = assignment1(imgfileR, imgfileG, imgfileB)
-% CV 16W ROUND 1 ASSIGNMENT 1
+% CV 16W ROUND 1 ASSIGNMENT 1: Colorizing Images
+% Usage: assignment1(filename_R, filename_G, filenameB)
 % Combine possibly shifted RGB channel images by determining
 % the necessery displacement to align them correctly
 % via the Normalized Cross Correlation

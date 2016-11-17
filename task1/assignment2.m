@@ -1,6 +1,6 @@
 function [] = assignment2( filename, K, D )
 % CV 16W ROUND 1 ASSIGNMENT 2: Image Segmentation by K-means Clustering
-% Usage: assignment2(filename,K,D)
+% Usage: assignment2(filename, K, D)
 % Performs a kMeans-Clustering and shows an image as a result consisting of
 % the pixels of each cluster colored in its centroid RGB-value
 if D==3 || D==5
