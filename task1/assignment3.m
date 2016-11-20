@@ -1,5 +1,6 @@
 function [] = assignment3( path_to_input_image )
-%ASSIGNMENT3  Scale-Invariant Blob Detection
+% CV 16W ROUND 1 ASSIGNMENT3: Scale-Invariant Blob Detection
+% Usage: assignment3(filename)
 %   with scale-normalized Laplacian of Gaussians operator
 %   Use this function if you want to execute this assignment with your own
 %   image.
