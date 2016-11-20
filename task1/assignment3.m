@@ -3,7 +3,10 @@ function [] = assignment3( path_to_input_image )
 %   with scale-normalized Laplacian of Gaussians operator
 %   Use this function if you want to execute this assignment with your own
 %   image.
-calculateAssignment3( path_to_input_image, 1, 1 );
+%calculateAssignment3( path_to_input_image, 1, 1 );
+%assignment3WithCraterImage();
+%assignment3WithButterflyImage();
+assignment3WithPlottingFilterResponsesOfOnePoint();
 end
 
 function [] = assignment3WithCraterImage()
@@ -24,7 +27,11 @@ responseOfPBigImage = calculateAssignment3( 'Images and Functions/bombCraters.jp
 responseOfPSmallImage = calculateAssignment3( 'Images and Functions/bomb_half.jpg', 129, 185 );
 scale = 1:size(responseOfPBigImage, 1);
 figure
-plot(scale,responseOfPBigImage, scale,responseOfPSmallImage)
+plot(scale,responseOfPBigImage, 'r', scale,responseOfPSmallImage, 'b')
+title('Filter Response Comparison')
+xlabel('Scale Step') % x-axis label
+ylabel('Filter Response') % y-axis label
+legend('Original Image','Half-Sized Image')
 end
 
 function [filterResponseAtXY] = calculateAssignment3( path_to_input_image, px, py )
@@ -64,7 +71,7 @@ for i = 1:levels % calculate all sigmas (increase always by multiplying with con
 end
 % For assignment3WithPlottingFilterResponsesOfOnePoint:
 filterResponseAtXY = zeros(levels,1);
-filterResponseAtXY(:) = scale_space(px,py,:);
+filterResponseAtXY(:) = scale_space(py,px,:);
 
 %% Non-maximum suppression
 scale_space = abs(scale_space); % only search for absolute maximums
