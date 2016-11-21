@@ -4,10 +4,10 @@ function [] = assignment3( path_to_input_image )
 %   with scale-normalized Laplacian of Gaussians operator
 %   Use this function if you want to execute this assignment with your own
 %   image.
-%calculateAssignment3( path_to_input_image, 1, 1 );
+calculateAssignment3( path_to_input_image, 1, 1 );
 %assignment3WithCraterImage();
 %assignment3WithButterflyImage();
-assignment3WithPlottingFilterResponsesOfOnePoint();
+%assignment3WithPlottingFilterResponsesOfOnePoint();
 end
 
 function [] = assignment3WithCraterImage()
@@ -45,8 +45,8 @@ function [filterResponseAtXY] = calculateAssignment3( path_to_input_image, px, p
 sigma0 = 2;
 k = 1.25;
 levels = 10;
-%threshold = 0.4; % ideal for butterfly image
-threshold = 0.25; % ideal for bomb image
+threshold = 0.4; % ideal for butterfly image
+%threshold = 0.25; % ideal for bomb image
 %threshold = 0.3; % ideal for rain image (but still bad results)
 %threshold = 0.07; % ideal for alphabet image (but terrible)
 
@@ -84,12 +84,12 @@ for i = 1:levels % check for maxima on all levels
     
     % compare with level above (i+1)
     if i ~= levels % there exists a level above
-        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i+1), true);
+        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i+1), false);
     end
     
     % compare with level below (i-1)
     if i ~= 1 % there exists a level below
-        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i-1), true);
+        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i-1), false);
     end
 end
 
