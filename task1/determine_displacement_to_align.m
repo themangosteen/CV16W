@@ -2,10 +2,10 @@ function [displacementBtoA] = determine_displacement_to_align(imgA, imgB)
 % Determine the necessary displacement for imgB in direction x and y,
 % i.e. how much to shift imgB down and right, to best align it with imgA.
 % The image matching metric used is the Normalized Cross-Correlation (NCC).
-% Cross-Correlation (similar to convolution) for a given discplacement is simply
-% a weighted average of values in imgA using values from displaced imgB as weights.
+% Cross-Correlation (similar to convolution) for a given displacement is simply
+% a weighted average of values in window in imgA using values from displaced window in imgB as weights.
 % Normalization (subtract mean and divide by standard deviation)
-% is needed since intensities at same pixel might vary in A and B.
+% is needed since intensity range might vary in A and B.
 %
 % INPUT
 % imgA, imgB ... images for which to compute displacement for best alignment

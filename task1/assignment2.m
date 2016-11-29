@@ -13,7 +13,7 @@ if D==3 || D==5
     mu_k=random('Uniform',0,1,D,K);
     %Matrix which consists of the segmentation vectors of the image (used
     %instead of the image for better performance)
-    image_matrix=zeros(D,size(image,1)*size(image,2));
+    image_matrix=zeros(D,size(image,1)*size(image,2))
     ratio = 14;
     termCrit = 1.01; %Ratio for which the clustering will terminate
     %Initial J for further ratio computation: The maximum distortion J is

@@ -19,8 +19,8 @@ calculateAssignment3( 'Images and Functions/butterfly.jpg', 1, 1 );
 end
 function [] = assignment3WithPlottingFilterResponsesOfOnePoint()
 % This method handles the task which is defined in the second bullet point
-% of assignment 3: Plotting the response of a certain point (we chose
-% 257/370) in both scales of the image.
+% of assignment 3: Plotting the response of a certain point, e.g. (257,370)
+% in both scales of the image.
 responseOfPBigImage = calculateAssignment3( 'Images and Functions/bombCraters.jpg', 257, 370 );
 responseOfPSmallImage = calculateAssignment3( 'Images and Functions/bomb_half.jpg', 129, 185 );
 scale = 1:size(responseOfPBigImage, 1);
