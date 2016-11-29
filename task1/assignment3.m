@@ -5,6 +5,9 @@ function [] = assignment3( path_to_input_image )
 %   Use this function if you want to execute this assignment with your own
 %   image.
 calculateAssignment3( path_to_input_image, 1, 1 );
+%assignment3WithCraterImage();
+%assignment3WithButterflyImage();
+%assignment3WithPlottingFilterResponsesOfOnePoint();
 end
 
 function [] = assignment3WithCraterImage()
@@ -25,7 +28,11 @@ responseOfPBigImage = calculateAssignment3( 'Images and Functions/bombCraters.jp
 responseOfPSmallImage = calculateAssignment3( 'Images and Functions/bomb_half.jpg', 129, 185 );
 scale = 1:size(responseOfPBigImage, 1);
 figure
-plot(scale,responseOfPBigImage, scale,responseOfPSmallImage)
+plot(scale,responseOfPBigImage, 'r', scale,responseOfPSmallImage, 'b')
+title('Filter Response Comparison')
+xlabel('Scale Step') % x-axis label
+ylabel('Filter Response') % y-axis label
+legend('Original Image','Half-Sized Image')
 end
 
 function [filterResponseAtXY] = calculateAssignment3( path_to_input_image, px, py )
@@ -38,8 +45,8 @@ function [filterResponseAtXY] = calculateAssignment3( path_to_input_image, px, p
 sigma0 = 2;
 k = 1.25;
 levels = 10;
-%threshold = 0.4; % ideal for butterfly image
-threshold = 0.25; % ideal for bomb image
+threshold = 0.4; % ideal for butterfly image
+%threshold = 0.25; % ideal for bomb image
 %threshold = 0.3; % ideal for rain image (but still bad results)
 %threshold = 0.07; % ideal for alphabet image (but terrible)
 
@@ -65,7 +72,7 @@ for i = 1:levels % calculate all sigmas (increase always by multiplying with con
 end
 % For assignment3WithPlottingFilterResponsesOfOnePoint:
 filterResponseAtXY = zeros(levels,1);
-filterResponseAtXY(:) = scale_space(px,py,:);
+filterResponseAtXY(:) = scale_space(py,px,:);
 
 %% Non-maximum suppression
 scale_space = abs(scale_space); % only search for absolute maximums
@@ -77,12 +84,12 @@ for i = 1:levels % check for maxima on all levels
     
     % compare with level above (i+1)
     if i ~= levels % there exists a level above
-        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i+1), true);
+        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i+1), false);
     end
     
     % compare with level below (i-1)
     if i ~= 1 % there exists a level below
-        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i-1), true);
+        maxima(:,:,i) = maxima(:,:,i) & compareWithLevel(scale_space(:,:,i), scale_space(:,:,i-1), false);
     end
 end
 
