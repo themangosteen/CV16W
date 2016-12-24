@@ -8,10 +8,16 @@ function [] = main(pathImgsTraining, pathImgsTest)
 %                      already know the classes this is actually used for
 %                      finding SIFT features that correspond to those
 %                      classes to later compare to test images).
+%                      Note: Images should be placed in subdirs of this
+%                      dir, one subdir for each class of images
 % pathImgsTest     ... path to directory of images to classify 
 %                      using trained bag of words system
 
-disp('BUILD VOCABULARY OF VISUAL WORDS (K-MEANS CLUSTERS OF SIFT FEATURES)');
+% Note: Spatial information is not relevant in the whole process,
+% images are classified purely by histograms of visual words!
+% Visual words are clusters of SIFT features determined on a regular grid.
+
+disp('BUILD VOCABULARY OF VISUAL WORDS (EACH WORD IS A K-MEANS CLUSTER OF SIFT FEATURES)');
 vocabSize = 100;
 vocabulary = BuildVocabulary(pathImgsTraining, vocabSize);
 
