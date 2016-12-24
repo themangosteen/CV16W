@@ -20,5 +20,6 @@ disp('ASSOCIATE TRAINING IMG SIFT FEATURES WITH THEIR CLASSIFICATION'); % TODO r
 
 disp('CLASSIFY NEW IMAGES AND EVALUATE CLASSIFICATION');
 confusion_matrix = ClassifyImages(pathImgsTest, vocabulary, trainingImgFeatures, trainingImgClassification);
+% determine percentage of correct classifications
 
 end
