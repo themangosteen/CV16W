@@ -1,18 +1,19 @@
-function [confusionMatrix] = ClassifyImages(imgDirPath, vocabulary, trainingImgWordHistograms, trainingImgClasses)
-% Classify
-% TODO
+function [trainingImgWordHistograms, trainingImgClasses] = BuildNNWordHistograms(imgDirPath, vocabulary)
+% To represent each image by a histogram of visual words,
+% we densely sample SIFT features in each image and assign them to their 
+% nearest neighbor (kNN search with k=1) word, i.e. cluster center in SIFT
+% feature space, counting how often SIFT features were assigned to each word.
 % 
 % INPUT
 % imgDirPath  ... image source directory, each class of images should have its own subdir
 % vocabulary  ... visual words, i.e. cluster centers in SIFT feature space
 %                 each columns is a 128 elem SIFT feature vector
+%
+% OUTPUT
 % trainingImgWordHistograms ... word histograms of all training images
 %                               each row is a word histogram of vocabulary length
 % trainingImgClasses        ... classes of all training images 
 %                               class index is training img subdir index
-%
-% OUTPUT
-% confusionMatrix ... TODO
 
 %% Densely sample SIFT features in each image and count nearest neighbor assignments to each word (cluster center)
 disp('Densely sample SIFT features in each image and count nearest neighbor assignments to each word (cluster center)...');

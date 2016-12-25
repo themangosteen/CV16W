@@ -1,5 +1,8 @@
 README
 
+from this directory, run as
+main('train', 'test')
+
 this requires the open source VLFeat library to be installed.
 http://www.vlfeat.org/install-matlab.html
 
