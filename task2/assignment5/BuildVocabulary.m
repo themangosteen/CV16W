@@ -40,9 +40,12 @@ for s = 1:numel(subdirs)
 end
 
 avgFeaturesPerImg = round(size(siftFeatureDescriptors,2)/imgCount);
-disp(sprintf('%d SIFT descriptors calculated from %d images on regular grid with %d pixel step size (avg. %d features per image)', size(siftFeatureDescriptors,2), imgCount, gridStepSize, avgFeaturesPerImg));
+disp(sprintf('%d SIFT descriptors calculated from %d images on regular grid with %d pixel step size (avg. %d features per image.)', size(siftFeatureDescriptors,2), imgCount, gridStepSize, avgFeaturesPerImg));
 
 %% Determine visual words as k-means clusters of SIFT features
-
+disp('Determine visual words as k-means clusters of SIFT features...');
+[centers, assignments] = vl_kmeans(single(siftFeatureDescriptors), numClusters);
+vocabulary = centers;
+disp(sprintf('Vocabulary of %d words (clusters) generated.', numClusters));
 
 end
