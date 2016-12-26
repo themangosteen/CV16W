@@ -1,4 +1,4 @@
-function [trainingImgWordHistograms, trainingImgClasses] = BuildNNWordHistograms(imgDirPath, vocabulary)
+function [trainingImgWordHistograms, trainingImgClasses] = BuildNNWordHistograms(imgDirPath, vocabulary, verbose)
 % To represent each image by a histogram of visual words,
 % we densely sample SIFT features in each image and assign them to their 
 % nearest neighbor (kNN search with k=1) word, i.e. cluster center in SIFT
@@ -8,15 +8,18 @@ function [trainingImgWordHistograms, trainingImgClasses] = BuildNNWordHistograms
 % imgDirPath  ... image source directory, each class of images should have its own subdir
 % vocabulary  ... visual words, i.e. cluster centers in SIFT feature space
 %                 each columns is a 128 elem SIFT feature vector
+% verbose     ... print verbose status information
 %
 % OUTPUT
-% trainingImgWordHistograms ... word histograms of all training images
+% trainingImgWordHistograms ... word histogram of each training image
 %                               each row is a word histogram of vocabulary length
-% trainingImgClasses        ... classes of all training images 
+% trainingImgClasses        ... class of each training image
 %                               class index is training img subdir index
 
 %% Densely sample SIFT features in each image and count nearest neighbor assignments to each word (cluster center)
-disp('Densely sample SIFT features in each image and count nearest neighbor assignments to each word (cluster center)...');
+if verbose==1 
+    disp('Densely sample SIFT features in each image and count nearest neighbor assignments to each word (cluster center)...');
+end
 
 imgCount = 0; % total number of images used
 descriptorCount = 0; % total number of SIFT feature descriptors
@@ -63,8 +66,10 @@ for s = 1:numel(subdirs)
     end
 end
 
-avgFeaturesPerImg = round(descriptorCount/imgCount);
-disp(sprintf('%d SIFT descriptors calculated from %d images on regular grid with %d pixel step size (avg. %d features per image.)', descriptorCount, imgCount, gridStepSize, avgFeaturesPerImg));
-disp(sprintf('Visual word histograms of vocabulary size %d generated for each of %d images of %d classes.', size(vocabulary,2), imgCount, numel(subdirs)));
+if verbose==1
+    avgFeaturesPerImg = round(descriptorCount/imgCount);
+    disp(sprintf('%d SIFT descriptors calculated from %d images on regular grid with %d pixel step size (avg. %d features per image.)', descriptorCount, imgCount, gridStepSize, avgFeaturesPerImg));
+    disp(sprintf('Visual word histograms of vocabulary size %d generated for each of %d images of %d classes.', size(vocabulary,2), imgCount, numel(subdirs)));
+end
 
 end
