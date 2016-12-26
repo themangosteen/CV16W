@@ -6,6 +6,7 @@ function [trainingImgWordHistograms, trainingImgClasses] = BuildNNWordHistograms
 % 
 % INPUT
 % imgDirPath  ... image source directory, each class of images should have its own subdir
+%                 images must be grayscale JPG
 % vocabulary  ... visual words, i.e. cluster centers in SIFT feature space
 %                 each columns is a 128 elem SIFT feature vector
 % verbose     ... print verbose status information
@@ -33,7 +34,7 @@ for s = 1:numel(subdirs)
     
     imgFiles = dir(fullfile(imgDirPath,subdirs{s},'*.jpg'));
     imgCount = imgCount + length(imgFiles);
-    for i = 1:length(imgFiles)
+    for i = 1:numel(imgFiles)
         
         imgPath = fullfile(imgDirPath,subdirs{s},imgFiles(i).name);
         img = im2single(imread(imgPath));
@@ -44,7 +45,7 @@ for s = 1:numel(subdirs)
         % densely sampled keypoints with identical size and orientation.
         % Option 'Fast' uses flat instead of Gaussian kernel
         % Option 'Step' means a SIFT descriptor is extracted each <Step> pixels.
-        gridStepSize = 10;
+        gridStepSize = 2;
         [frames, imgDescriptors] = vl_dsift(img, 'Fast', 'Step', gridStepSize);
         descriptorCount = descriptorCount + size(imgDescriptors,2);
         

@@ -6,6 +6,7 @@ function [confusionMatrix] = ClassifyImages(imgDirPath, vocabulary, trainingImgW
 % 
 % INPUT
 % imgDirPath  ... image source directory, each class of images should have its own subdir
+%                 images must be grayscale JPG
 % vocabulary  ... visual words, i.e. cluster centers in SIFT feature space
 %                 each columns is a 128 elem SIFT feature vector
 % trainingImgWordHistograms ... word histogram of each training image

@@ -7,6 +7,7 @@ function [vocabulary] = BuildVocabulary(imgDirPath, numClusters)
 % 
 % INPUT
 % imgDirPath  ... image source directory, each class of images should have its own subdir
+%                 images must be grayscale JPG
 % numClusters ... number of k-means cluster centers (= number of words in vocabulary)
 %
 % OUTPUT
@@ -37,7 +38,7 @@ for s = 1:numel(subdirs)
         % densely sampled keypoints with identical size and orientation.
         % Option 'Fast' uses flat instead of Gaussian kernel
         % Option 'Step' means a SIFT descriptor is extracted each <Step> pixels.
-        gridStepSize = 100;
+        gridStepSize = 25;
         [frames, descriptors] = vl_dsift(img, 'Fast', 'Step', gridStepSize);
         siftFeatureDescriptors = [siftFeatureDescriptors descriptors]; % each column is one 128 elem SIFT feature vector
         
