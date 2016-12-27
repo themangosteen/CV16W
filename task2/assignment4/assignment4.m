@@ -86,26 +86,35 @@ for i=1:4 % for every image pair
     % 5. Transform the first image onto the second image. For this purpose, use the function
     % imtransform and specify the arguments 'Xdata' , 'Ydata' and 'XYScale' to get the
     % same dimension as the second image.
+    % See were the corner points of the image are projected to.
     referencePointsX = [1, 1, size(imageB,2), size(imageB,2)];
     referencePointsY = [1, size(imageB,1), 1, size(imageB,1)];
     [transformedX,transformedY] = tformfwd(transformMatrixOnlyWithInliers, referencePointsX, referencePointsY);
-    xdata = [min(transformedX),max(transformedX)];
-    ydata = [min(transformedY),max(transformedY)];
+    % define something like a bounding box (create a space in which the original imageA and 
+    % the projected imageB can be combined):
+    xdata = [min(min(transformedX),0),max(max(transformedX),size(imageA,2))];
+    ydata = [min(min(transformedY),0),max(max(transformedY),size(imageA,1))];
 
-    %transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers, 'Xdata', xdata, 'Ydata', ydata, 'XYScale', xyscale);
-    %transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers);
-    %transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers, 'Xdata', xdata, 'Ydata', ydata, 'XYScale', [1,5]);
-    %transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers, 'Xdata', [min(transformedBx),max(transformedBx)], 'Ydata', [min(transformedBy),max(transformedBy)], 'XYScale', [1,1]);
-    %transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers, 'Xdata', [300,900], 'Ydata', [300,900]);
+    % transform the image using the matrix and the bounding box
     transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers, 'Xdata', xdata, 'Ydata', ydata);
-
+    
+    % imageA with a black border around to match the dimensions of the
+    % transformed
+    imageAWithBDimensions = zeros(size(transformedImageB));
+    % 1-ydata(1) because there a (negative) value is stored if the
+    % transformed image results in an image above the original image. Then
+    % the original image has to be shifted down and cannot start at (1,1)
+    % but (1+x,1) and because in ydata there is saved -x saved we take 1-x.
+    imageAWithBDimensions(1-ydata(1):size(imageA,1)-ydata(1),1:size(imageA,2)) = imageA;
+    combinedByTakingMax = max(transformedImageB, imageAWithBDimensions);
     figure
-    imshow(imageB);
+    imshow(combinedByTakingMax);
+    title('Combined by taking the maximum value');
+    
+    diffImage = abs(transformedImageB-imageAWithBDimensions);
     figure
-    imshow(transformedImageB);
-%     imshow(imageA);
-% both = imfuse(transformedImageB,imageA);
-% imshow(both);
+    imshow(diffImage);
+    title('Difference between original image and other projected image');
 end
 
 
