@@ -1,3 +1,6 @@
+function assignment4()
+% Function for assignment4. No parameters necessary.
+
 %% Initialisation (Reading images)
 close all; % close all open graphs
 imagename = 'campus';
@@ -19,6 +22,7 @@ for i=1:5 % for every image
     figure;
     imshow(image)
     vl_plotframe(siftFrames{i}); % plot descriptors on top of image
+    print(strcat('img/results/SiftFeatures',num2str(i)),'-dpng');
 end
 
 %% B. Interest Point Matching and Image Registration
@@ -34,7 +38,8 @@ for i=1:4 % for every image pair
     pointsB = siftFrames{i+1}(1:2,matches(2,:));
     % Plot the results (matched feature points)
     match_plot(imageA, imageB, pointsA', pointsB');
-    
+    print(strcat('img/results/Matchings',num2str(i),'-',num2str(i+1)),'-dpng');
+
     % RANSAC (find homography for inliers)
     currentlyBestNumberOfInliers = 0;
     currentlyBestInliers = [];
@@ -90,11 +95,11 @@ for i=1:4 % for every image pair
     referencePointsX = [1, 1, size(imageB,2), size(imageB,2)];
     referencePointsY = [1, size(imageB,1), 1, size(imageB,1)];
     [transformedX,transformedY] = tformfwd(transformMatrixOnlyWithInliers, referencePointsX, referencePointsY);
-    % define something like a bounding box (create a space in which the original imageA and 
+    % define something like a bounding box (create a space in which the original imageA and
     % the projected imageB can be combined):
     xdata = [min(min(transformedX),0),max(max(transformedX),size(imageA,2))];
     ydata = [min(min(transformedY),0),max(max(transformedY),size(imageA,1))];
-
+    
     % transform the image using the matrix and the bounding box
     transformedImageB = imtransform(imageB, transformMatrixOnlyWithInliers, 'Xdata', xdata, 'Ydata', ydata);
     
@@ -110,13 +115,19 @@ for i=1:4 % for every image pair
     figure
     imshow(combinedByTakingMax);
     title('Combined by taking the maximum value');
+    print(strcat('img/results/MaxCombination',num2str(i),'-',num2str(i+1)),'-dpng');
+
     
     diffImage = abs(transformedImageB-imageAWithBDimensions);
     figure
     imshow(diffImage);
     title('Difference between original image and other projected image');
+    print(strcat('img/results/DiffCombination',num2str(i),'-',num2str(i+1)),'-dpng');
+
 end
 
 
 %% C. Image Stitching
 % TODO
+
+end
