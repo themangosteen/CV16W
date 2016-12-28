@@ -3,7 +3,7 @@ function assignment4()
 
 %% Initialisation (Reading images)
 close all; % close all open graphs
-imagename = 'campus';
+imagename = 'campus'; % name of image series
 ransacIterations = 1000;
 ransacEucDistThreshold = 5;
 for i=1:5 % for every image
@@ -87,7 +87,10 @@ for i=1:4 % for every image pair
     coordinatesOfInlierFeaturePointsInImageA = pointsA(:,currentlyBestInliers);
     coordinatesOfInlierFeaturePointsInImageB = pointsB(:,currentlyBestInliers);
     transformMatrixOnlyWithInliers = cp2tform(coordinatesOfInlierFeaturePointsInImageB',coordinatesOfInlierFeaturePointsInImageA','projective');
-    
+    % Plot the matches of the inliers after step 4
+    match_plot(imageA, imageB, coordinatesOfInlierFeaturePointsInImageA', coordinatesOfInlierFeaturePointsInImageB');
+    print(strcat('img/results/MatchingsInliers',num2str(i),'-',num2str(i+1)),'-dpng');
+
     % 5. Transform the first image onto the second image. For this purpose, use the function
     % imtransform and specify the arguments 'Xdata' , 'Ydata' and 'XYScale' to get the
     % same dimension as the second image.
@@ -110,7 +113,7 @@ for i=1:4 % for every image pair
     % transformed image results in an image above the original image. Then
     % the original image has to be shifted down and cannot start at (1,1)
     % but (1+x,1) and because in ydata there is saved -x saved we take 1-x.
-    imageAWithBDimensions(1-ydata(1):size(imageA,1)-ydata(1),1:size(imageA,2)) = imageA;
+    imageAWithBDimensions(1-ydata(1):size(imageA,1)-ydata(1),1-xdata(1):size(imageA,2)-xdata(1)) = imageA;
     combinedByTakingMax = max(transformedImageB, imageAWithBDimensions);
     figure
     imshow(combinedByTakingMax);
@@ -130,4 +133,5 @@ end
 %% C. Image Stitching
 % TODO
 
+close all; % close all plots/graphs because there are too much. Open them in the img/results folder if needed
 end
