@@ -44,7 +44,7 @@ while true
     path = strcat('img/',imagename,num2str(NoofImages),'.jpg');
     if(~exist(path,'file'))
         if(mod(NoofImages,2)==1)%if NoofImages isn't odd abort
-            disp('error!')
+            disp('Error: Number of images isn''t odd or filename does not exist! Aborting.')
             return
         end
         NoofImages=NoofImages-1;
@@ -82,15 +82,18 @@ for i=1:NoofImages-1 % for every image pair
     % extract the coordinates from the siftFrames matrix
     pointsA = siftFrames{i}(1:2,matches(1,:));
     pointsB = siftFrames{i+1}(1:2,matches(2,:));
-    % Plot the results (matched feature points)
+    pointsAoMA=pointsA;
+    pointsBoMB=pointsB;
     if(protocol)
+        % Plot the results (matched feature points)
         match_plot(imageA, imageB, pointsA', pointsB');
         print(strcat('img/results/Matchings',num2str(i),'-',num2str(i+1)),'-dpng');
     end
 
     % RANSAC (find homography for inliers)
     currentlyBestNumberOfInliers = 0;
-    currentlyBestInliers = [];
+    coordinatesOfInlierFeaturePointsInImageA=[];
+    coordinatesOfInlierFeaturePointsInImageB=[];
     for j=1:ransacIterations
         % a) Randomly choose 4 matches
         % choose indices of matches (ex. take match #42, #142,...)
@@ -98,10 +101,14 @@ for i=1:NoofImages-1 % for every image pair
         % get coordinates of those matched featurepoints
         coordinatesOfMatchedFeaturePointsInImageA = pointsA(:,indicesOfFourRandomMatches);
         coordinatesOfMatchedFeaturePointsInImageB = pointsB(:,indicesOfFourRandomMatches);
+        %only use points that have not been used for matching, transforms
+        %and measures distance for inliers only for all but the 4 random
+        %chosen points, comment out the next 2 lines to take all points
+        %instead for looking for the most inliers
+        pointsAoMA=pointsA(:,setdiff(1:size(pointsA,2),indicesOfFourRandomMatches));
+        pointsBoMB=pointsB(:,setdiff(1:size(pointsB,2),indicesOfFourRandomMatches));
         % for debug purposes: draw those 4 matchings:
         % match_plot(imageA, imageB, coordinatesOfMatchedFeaturePointsInImageA', coordinatesOfMatchedFeaturePointsInImageB');
-        
-        % TODO: only use matchings that have not been used for matching
         
         % b) Estimate homography
         try % cp2tform throws an exception if for example the points are on a line
@@ -110,19 +117,20 @@ for i=1:NoofImages-1 % for every image pair
             
             % c) Transform all other points of putative matches in the first image using tformfwd
             % (homography, x values, y values)
-            [transformedBx,transformedBy] = tformfwd(transformMatrix, pointsB(1,:), pointsB(2,:));
+            [transformedBx,transformedBy] = tformfwd(transformMatrix, pointsBoMB(1,:), pointsBoMB(2,:));
             
             % d) Determine the number of inliers: compute the Euclidean distance between the trans-
             % formed points of the first image and the corresponding points of the second im-
             % age and count a match as inlier, if the distance is under a certain threshold T (e.g.
             % T = 5).
-            eucDist = ((transformedBx-pointsA(1,:)).^2+(transformedBy-pointsA(2,:)).^2).^(1/2);
+            eucDist = ((transformedBx-pointsAoMA(1,:)).^2+(transformedBy-pointsAoMA(2,:)).^2).^(1/2);
             inliers = false(size(eucDist,1),size(eucDist,2)); % init
             inliers(eucDist<ransacEucDistThreshold) = 1; % inlier are represented by 1s
             numberOfInliers = sum(inliers,2); % count all 1s
             if numberOfInliers>currentlyBestNumberOfInliers % take homography with maximal inliers
                 currentlyBestNumberOfInliers = numberOfInliers;
-                currentlyBestInliers = inliers;
+                coordinatesOfInlierFeaturePointsInImageA=pointsAoMA(:,inliers);
+                coordinatesOfInlierFeaturePointsInImageB=pointsBoMB(:,inliers);
             end
         catch
             if(~nowarnings)
@@ -132,8 +140,6 @@ for i=1:NoofImages-1 % for every image pair
     end
     % 4. After the N runs, take the homography that had the maximum number of inliers. Re-
     % estimate the homography with all inliers to obtain a more accurate result.
-    coordinatesOfInlierFeaturePointsInImageA = pointsA(:,currentlyBestInliers);
-    coordinatesOfInlierFeaturePointsInImageB = pointsB(:,currentlyBestInliers);
     transformMatrixOnlyWithInliers = cp2tform(coordinatesOfInlierFeaturePointsInImageB',coordinatesOfInlierFeaturePointsInImageA','projective');
     if(protocol)%whole 5. is only needed for the protocol as the transformation with more than 2 images is done at point C
         % Plot the matches of the inliers after step 4
@@ -242,18 +248,55 @@ for i=1:NoofImages
     %imshow(squeeze(transformedImages(i,:,:,:)));
 end
 
-%for debug/report purposes: all pictures combined with max:
+%for debug purposes: all pictures combined with max:
+% debugimage=zeros(size(transformedImages,2),size(transformedImages,3),size(transformedImages,4));
+% for i=1:size(transformedImages,2)
+%     for j=1:size(transformedImages,3)
+%         debugimage(i,j,1)=max(transformedImages(:,i,j,1));
+%         debugimage(i,j,2)=max(transformedImages(:,i,j,2));
+%         debugimage(i,j,3)=max(transformedImages(:,i,j,3));
+%     end
+% end
+% figure
+% imshow(debugimage);
 if(protocol)
-    debugimage=zeros(size(transformedImages,2),size(transformedImages,3),size(transformedImages,4));
-    for i=1:size(transformedImages,2)
-        for j=1:size(transformedImages,3)
-            debugimage(i,j,1)=max(transformedImages(:,i,j,1));
-            debugimage(i,j,2)=max(transformedImages(:,i,j,2));
-            debugimage(i,j,3)=max(transformedImages(:,i,j,3));
-        end
-    end
+    %Version which overlays from the side images to the middle one after
+    %the other (only one image used for every pixel i.e. the information
+    %of the most centered image is taken alone)
+    blendlessimage=zeros(size(transformedImages,2),size(transformedImages,3),size(transformedImages,4));
+     for k=1:referenceImage-1
+         for i=1:size(transformedImages,2)
+              for j=1:size(transformedImages,3)
+                  if(transformedImages(k,i,j,1)||transformedImages(k,i,j,2)||transformedImages(k,i,j,3))
+                    blendlessimage(i,j,1)=transformedImages(k,i,j,1);
+                    blendlessimage(i,j,2)=transformedImages(k,i,j,2);
+                    blendlessimage(i,j,3)=transformedImages(k,i,j,3);
+                  end
+              end
+          end
+     end
+     for k=NoofImages:-1:referenceImage+1
+         for i=1:size(transformedImages,2)
+              for j=1:size(transformedImages,3)
+                  if(transformedImages(k,i,j,1)||transformedImages(k,i,j,2)||transformedImages(k,i,j,3))
+                    blendlessimage(i,j,1)=transformedImages(k,i,j,1);
+                    blendlessimage(i,j,2)=transformedImages(k,i,j,2);
+                    blendlessimage(i,j,3)=transformedImages(k,i,j,3);
+                  end
+              end
+          end
+     end
+      for i=1:size(transformedImages,2)
+          for j=1:size(transformedImages,3)
+              if(transformedImages(referenceImage,i,j,1)||transformedImages(referenceImage,i,j,2)||transformedImages(referenceImage,i,j,3))
+                blendlessimage(i,j,1)=transformedImages(referenceImage,i,j,1);
+                blendlessimage(i,j,2)=transformedImages(referenceImage,i,j,2);
+                blendlessimage(i,j,3)=transformedImages(referenceImage,i,j,3);
+              end
+          end
+      end
     figure
-    imshow(debugimage);
+    imshow(blendlessimage);
 end
 
 % 5. blend overlapping pixel color values
